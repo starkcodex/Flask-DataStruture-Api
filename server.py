@@ -54,9 +54,28 @@ def get_all_users_ascen():
 
 
 @app.route("/user/<user_id>", methods=["GET"])
-def create_user(user_id):
+def get_one_user(user_id):
+    pass
+
+@app.route("/user/<user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    pass
+
+@app.route("/blog_post/<user_id>", methods=["POST"])
+def create_blog_post(user_id):
+    pass
+
+@app.route("/user/<user_id>", methods=["GET"])
+def get_all_blog_post(user_id):
+    pass
+
+@app.route("/blog_post/<blog_post_id>", methods=["GET"])
+def get_one_blog_post(blog_post_id):
     pass
     
+@app.route("/blog_post/<blog_post_id>", methods=["DELETE"])
+def delete_blog_post(blog_post_id):
+    pass
 
 if __name__ == "__main__":
     with app.app_context():
