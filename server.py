@@ -1,3 +1,4 @@
+import linked_list
 from flask import Flask, request, jsonify
 from datetime import datetime
 from sqlalchemy import event
@@ -41,11 +42,35 @@ class BlogPost(db.Model):
 
 @app.route("/user", methods=["POST"])
 def create_user():
-    pass
+    data = request.get_json()
+    new_user = User(
+        name = data["name"],
+        email = data["email"],
+        address = data["address"],
+        phone = data["phone"],
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"message": "User Created Successfully!"}), 200
+
 
 @app.route("/user/descending_id", methods=["GET"])
 def get_all_users_desc():
-    pass
+    users = User.query.all()
+    all_users_ll = linked_list.LinkedList()
+
+    for user in users:
+        all_users_ll.insert_beginning(
+            {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "address": user.address,
+                "phone": user.phone,
+            }
+        )
+
+    return jsonify(all_users_ll.to_list()), 200
 
 
 @app.route("/user/ascending_id", methods=["GET"])
