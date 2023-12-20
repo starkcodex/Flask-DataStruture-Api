@@ -1,4 +1,5 @@
 import linked_list
+import hash_table
 from flask import Flask, request, jsonify
 from datetime import datetime
 from sqlalchemy import event
@@ -119,7 +120,30 @@ def delete_user(user_id):
 
 @app.route("/blog_post/<user_id>", methods=["POST"])
 def create_blog_post(user_id):
-    pass
+    data = request.get_json()
+
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({"message": "user does not exists!"}), 400
+    
+    ht = hash_table.HashTable(10)
+
+    ht.add_key_value("title", data["title"])
+    ht.add_key_value("body", data["body"])
+    ht.add_key_value("date", now)
+    ht.add_key_value("user_id", user_id)
+
+    new_blog_post = BlogPost(
+        title=ht.get_value("title"),
+        body=ht.get_value("body"),
+        date=ht.get_value("date"),
+        user_id=ht.get_value("user_id")
+    )
+    db.session.add(new_blog_post)
+    db.session.commit()
+    return jsonify({"message": "Blog Post Craeted!"}), 200
+
+
 
 @app.route("/user/<user_id>", methods=["GET"])
 def get_all_blog_post(user_id):
