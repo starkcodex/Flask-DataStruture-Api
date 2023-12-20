@@ -1,5 +1,7 @@
+import random
 import linked_list
 import hash_table
+import binary_search_tree
 from flask import Flask, request, jsonify
 from datetime import datetime
 from sqlalchemy import event
@@ -143,16 +145,44 @@ def create_blog_post(user_id):
     db.session.commit()
     return jsonify({"message": "Blog Post Craeted!"}), 200
 
-
-
-@app.route("/user/<user_id>", methods=["GET"])
-def get_all_blog_post(user_id):
-    pass
-
 @app.route("/blog_post/<blog_post_id>", methods=["GET"])
 def get_one_blog_post(blog_post_id):
-    pass
-    
+    blog_posts = BlogPost.query.all()
+    random.shuffle(blog_posts)
+
+    bst = binary_search_tree.BinarySearchTree()
+
+    for post in blog_posts:
+        bst.insert({
+            "id" : post.id,
+            "title" : post.title,
+            "body" : post.body,
+            "user_id" : post.user_id,
+        })
+
+    post = bst.search(blog_post_id)
+
+    if not post:
+        return jsonify({"message": "post not found"})
+
+    return jsonify(post)
+
+@app.route("/blog_post/descending_id", methods=["GET"])
+def get_all_blog_post():
+    blog_posts = BlogPost.query.all()
+    all_blogs_ll = linked_list.LinkedList()
+
+    for blog in blog_posts:
+        all_blogs_ll.insert_beginning(
+            {
+            "id" : blog.id,
+            "title" : blog.title,
+            "body" : blog.body,
+            }
+        )
+
+    return jsonify(all_blogs_ll.to_list()), 200
+
 @app.route("/blog_post/<blog_post_id>", methods=["DELETE"])
 def delete_blog_post(blog_post_id):
     pass
